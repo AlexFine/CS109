@@ -1,0 +1,31 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf830
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;}
+{\*\expandedcolortbl;;}
+\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0     %8\
+    \\item The Huffmeister floodplane in Houston has historically been estimated to flood at an average rate of 1 flood every 500 years. A flood plane with that rate of flooding is called a ``500 year'' floodplane.\
+    \\begin\{enumerate\}\
+        \\item What is the probability of observing at least 3 floods in 500 years?\
+        \\item What is the probability that a flood will occur within the next 100 years?\
+        \\item What is the expected number of years until the next flood?\
+    \\end\{enumerate\}\
+    \
+    \\begin\{shaded\}\
+    \\begin\{answer\}\
+    When dealing with continuous rates, and a probability of an event occurring within a given fixed time, we can best model the behavior of the random variable with Poisson. \\\\ \\\\ \
+    $\\lambda = 1$ per 500 years\\\\ \\\\ \
+    The probability of observing three or more floods, is equivalent to the following: \\\\ \\\\ \
+    $P(X\\geq 3) = 1 - P(X=0) - P(X=1) - P(X=2)$ \\\\ \\\\ \
+    $P(X=0) = (1)(e^(-1)$ \\\\\
+    $P(X=1) = (1)(e^(-1)$ \\\\\
+    $P(X=2) = (\\frac\{1\}\{2\})(e^(-1)$ \\\\ \
+    $P(X\\geq 3) = 1 - 0.3678 - 0.3678 - 0.1839 = \\textbf\{0.0803\}$ \\\\ \\\\ \
+    For part b, we must first remodel the rate in terms of 100 years. Now, $\\lambda = 0.2$. The probability that a flood will occur is equal to $P(X\\geq 1)$. Because if say 5 floods occurred, than the statement a flood occurred is still true. This probability equivalent to $1 - P(X=0)$. \\\\ \\\\ \
+    $P(X=0) = \\frac\{.2^0\}\{0!\}(e^(-0.2) = 0.818$ \\\\ \
+    $P(X\\geq 1) = 1 - P(X=0) = \\textbf\{0.1812\}$ \\\\ \\\\ \
+    The expected value of an exponential function with a rate of lambda is equal to lambda. This expected value makes sense. If an event occurs every 500 years, than we'd expect the event to occur in about 500 years. \
+    \\end\{answer\}\
+    \\end\{shaded\} \\newpage }
