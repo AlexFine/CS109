@@ -23,12 +23,14 @@ def sim_x():
     # Print out results
     for i in range(100):
         print(i, (per_arr[i]/1000), "%")
+        per_arr[i] = per_arr[i]/1000
 
     # Nums
+    graph_arr = per_arr[30:60]
     temp = []
-    for i in range(100):
-        temp.append(i+1)
-    plt.bar(temp, per_arr)
+    for i in range(30):
+        temp.append(i+30)
+    plt.bar(temp, graph_arr)
 
     plt.draw()
     plt.pause(0.0001)
@@ -42,9 +44,9 @@ def perc(arr):
     count = 0
     for i in arr:
         # print(i)
-        # ret_arr[int(round(i))] += 1
-        if (i > 47.5) and (i < 48.5):
-            count += 1
+        ret_arr[int(round(i))] += 1
+        # if (i > 47.5) and (i < 48.5):
+        #     count += 1
 
     print(count)
 
