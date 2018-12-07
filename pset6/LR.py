@@ -3,13 +3,13 @@ import numpy as np
 import math
 
 # Logistic regression!!
-LR = 0.001
+LR = 0.0001
 EPOCH_LEN = 10000
 
 # master logic
 def master():
     # load files
-    filename = "simple"
+    filename = "ancestry"
     path = "data/" + filename
     data_train, data_test = load_data(path)
     # Set x vs. y

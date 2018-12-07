@@ -1,12 +1,12 @@
 import numpy as np
 import math
-K = 2
-L = 1
+K = 0
+L = 0
 
 # master naive bayes classifier logic
 def master():
     # First load in data
-    file_name = "ancestry"
+    file_name = "heart"
     path = "data/" + file_name
     # Load data
     train_matrix, test_matrix = load_data(path)
@@ -42,6 +42,7 @@ def test_model(y0_data, y1_data, y0_n, y1_n, test_matrix):
 
 # Get a prob
 def get_prob(y_data, x, y1, y2):
+    # print(y_data)
     """ using Naive Bayes we want:
         P(Y)*P(X_1|Y)*P(X_2|Y)*...*P(X_m|Y)
         using logs this is -->
@@ -58,7 +59,7 @@ def get_prob(y_data, x, y1, y2):
         # Get probability
         temp_prob = y_data[i] if (x[i] == 1) else (1-y_data[i])
         # Take log
-        l_prob = math.log(temp_prob)
+        l_prob = math.log(temp_prob) if (temp_prob != 0) else -1000000 # FIX ME
         # append to prob
         prob += l_prob
 
@@ -146,4 +147,4 @@ def read_text(path):
 
     return ret
 
-master()
+print(master())
