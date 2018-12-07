@@ -28,13 +28,39 @@ def master():
     print(var_w_5(data_arr))
     # Part c
     print(var_w_5_median(data_arr))
+    # Part d
+    print(expected_of_both(data_arr))
+# Expected value of BOTH YO
+def expected_of_both(arr):
+    loop_len = 5
+    blip = []
+    var_arr = []
+    # Simulate the bitch
+    for i in range(N):
+        temp = []
+        for i in range(loop_len):
+            temp.append(random.choice(arr))
+        # calc avg.
+        median = statistics.median(temp)
+        blip.append(median)
+
+    blop = []
+    for i in range(N):
+        temp = []
+        for i in range(loop_len):
+            temp.append(random.choice(arr))
+        # calc avg.
+        avg = sum(temp)/len(temp)
+        blop.append(avg)
+
+    return sum(blip)/len(blip), sum(blop)/len(blop)
 
 # Bootstrap to create an array of 5 averages
 def var_w_5_median(arr):
     loop_len = 5
     e_2_arr = []
     var_arr = []
-    # Simulate the bitch
+    # Simulate
     for i in range(N):
         temp = []
         for i in range(loop_len):
@@ -44,7 +70,7 @@ def var_w_5_median(arr):
         e_2_arr.append(median*median)
     # Print variance
     e2_sum = sum(e_2_arr)/len(e_2_arr)
-    samp = sample_mean(arr)
+    samp, _ = expected_of_both(arr)
     # Variance
     var = e2_sum - samp*samp
     # return
@@ -55,7 +81,7 @@ def var_w_5(arr):
     loop_len = 5
     e_2_arr = []
     var_arr = []
-    # Simulate the bitch
+    # Simulate
     for i in range(N):
         temp = []
         for i in range(loop_len):
@@ -64,8 +90,6 @@ def var_w_5(arr):
         avg = sum(temp)/len(temp)
         e_2_arr.append(avg*avg)
     # Print variance
-    print(e_2_arr[-30:])
-    print(sum(e_2_arr))
     e2_sum = sum(e_2_arr)/len(e_2_arr)
     samp = sample_mean(arr)
     # Variance
