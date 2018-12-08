@@ -6,7 +6,7 @@ L = 0
 # master naive bayes classifier logic
 def master():
     # First load in data
-    file_name = "heart"
+    file_name = "netflix"
     path = "data/" + file_name
     # Load data
     train_matrix, test_matrix = load_data(path)

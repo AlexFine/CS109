@@ -9,7 +9,7 @@ EPOCH_LEN = 10000
 # master logic
 def master():
     # load files
-    filename = "ancestry"
+    filename = "netflix"
     path = "data/" + filename
     data_train, data_test = load_data(path)
     # Set x vs. y
@@ -21,7 +21,7 @@ def master():
     w = rand_init(m) # (mx1)
     b = 0 # (1x1)
     # Train
-    w, b = train(w, b, x_train, y_train, m)
+    w, b = train(w, b, x_train, y_train, m, x_test, y_test)
     # Test
     accuracy = test(w, b, x_test, y_test)
     # report accuracy
@@ -35,8 +35,7 @@ def test(w, b, x_test, y_test):
     for row in x_test: # each row is mx1
         Z = np.dot(row, w)
         y_hat = sigmoid_v(Z)
-        print(y_hat)
-        print(y_test[i])
+        # Y_ht stuff
         if (y_test[i] == 1) and (y_hat > 0.5):
             correct += 1
         elif(y_test[i] == 0) and (y_hat <= 0.5):
@@ -50,7 +49,7 @@ def test(w, b, x_test, y_test):
     return correct/(correct + incorrect)
 
 # train and optimize those weights!!
-def train(old_w, old_b, x_train, y_train, m):
+def train(old_w, old_b, x_train, y_train, m, x_test, y_test):
     # Set
     w = np.asarray(old_w)
     b = old_b # don't mess w for now come back later
@@ -58,13 +57,13 @@ def train(old_w, old_b, x_train, y_train, m):
     # train her
     for i in range(EPOCH_LEN):
         # Set our Z layer
-        Z = np.dot(x_train, w.T) + b # x and w dot product
+        Z = np.dot(x_train, w.T) + b # x and w dot product nxm 1xm 
         # Sigmoid yo
         Z = sigmoid_v(Z) # nx1
         # backprop to set gradients
         temp = y_train - Z # nx1
         b_grad = temp
-        grad = np.dot(x_train.T, temp.T) #nxm x 1xn = 1xm
+        grad = np.dot(x_train.T, temp.T) #nxm x 1xn = mx1
         # Scale by LR
         grad = grad*LR
         # Append
@@ -74,6 +73,8 @@ def train(old_w, old_b, x_train, y_train, m):
         w = w.reshape((m,))
         # print
         if i % 1000 == 0:
+            print("Test Accuracy: ", test(w, b, x_test, y_test))
+            print("Train Accuracy: ", test(w, b, x_train, y_train))
             print(i)
 
 
