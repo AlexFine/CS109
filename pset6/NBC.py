@@ -6,7 +6,7 @@ L = 0
 # master naive bayes classifier logic
 def master():
     # First load in data
-    file_name = "netflix"
+    file_name = "heart"
     path = "data/" + file_name
     # Load data
     train_matrix, test_matrix = load_data(path)
@@ -14,6 +14,8 @@ def master():
     y0_set, y1_set = divide_data(train_matrix)
     # generate array aka model data
     y0_data, y1_data, y0_n, y1_n = gen_data(y0_set, y1_set)
+    print("Y0 Data: ", y0_data)
+    print("Y1 Data: ", y1_data)
     # Test accuracy
     accuracy = test_model(y0_data, y1_data, y0_n, y1_n, test_matrix)
     # Let us know how we did
@@ -23,6 +25,7 @@ def master():
 def test_model(y0_data, y1_data, y0_n, y1_n, test_matrix):
     correct = 0
     incorrect = 0
+    i = 0
     # iterate through test matrix
     for row in test_matrix:
         # get input elements
@@ -36,6 +39,11 @@ def test_model(y0_data, y1_data, y0_n, y1_n, test_matrix):
         # Append correct
         correct += 1 if (pred==y) else 0
         incorrect += 0 if (pred==y) else 1
+        if pred != y:
+            print(i)
+            print(row[-7])
+            print(row[-11])
+        i += 1
 
     # Return
     return correct/(correct + incorrect)

@@ -3,13 +3,13 @@ import numpy as np
 import math
 
 # Logistic regression!!
-LR = 0.0001
-EPOCH_LEN = 10000
+LR = 0.00002
+EPOCH_LEN = 3000
 
 # master logic
 def master():
     # load files
-    filename = "netflix"
+    filename = "heart"
     path = "data/" + filename
     data_train, data_test = load_data(path)
     # Set x vs. y
@@ -31,6 +31,7 @@ def test(w, b, x_test, y_test):
     correct = 0
     incorrect = 0
     # Test it out
+    loss = 0
     i = 0
     for row in x_test: # each row is mx1
         Z = np.dot(row, w)
@@ -43,6 +44,8 @@ def test(w, b, x_test, y_test):
         else:
             incorrect += 1
         # iterate i
+        loss += math.log(y_test[i] - y_hat) if (y_test[i] == 1) else math.log(y_hat)
+
         i += 1
 
     # Return final answer
@@ -57,7 +60,7 @@ def train(old_w, old_b, x_train, y_train, m, x_test, y_test):
     # train her
     for i in range(EPOCH_LEN):
         # Set our Z layer
-        Z = np.dot(x_train, w.T) + b # x and w dot product nxm 1xm 
+        Z = np.dot(x_train, w.T) + b # x and w dot product nxm 1xm nx1
         # Sigmoid yo
         Z = sigmoid_v(Z) # nx1
         # backprop to set gradients
@@ -76,7 +79,6 @@ def train(old_w, old_b, x_train, y_train, m, x_test, y_test):
             print("Test Accuracy: ", test(w, b, x_test, y_test))
             print("Train Accuracy: ", test(w, b, x_train, y_train))
             print(i)
-
 
     return w, b
 

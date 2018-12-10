@@ -1,17 +1,15 @@
 # Let's go
-
 import random
 import numpy as np
 import math
 
-# Logistic regression!!
-LR = 0.0001
-EPOCH_LEN = 10000
+# Nearual Network!!
+LR = 0.000001
+EPOCH_LEN = 100000
 # DIMENTIONS
-A = 50
-B = 25
+A = 16
+B = 4
 
-# FIX FOR NN
 # master logic
 def master():
     # load files
@@ -23,6 +21,10 @@ def master():
     x_test, y_test = xy(data_test)
     # set m
     m = len([i for i in x_train[0]])
+    # set n
+    n = 0
+    for row in x_train:
+        n += 1
     # initialize weights
     weights = {
         "w1": rand_init(m, A), #mxA
@@ -36,39 +38,56 @@ def master():
         "b3": 0 #1x1
     }
     # Train
-    weights, bias = train(weights, bias, x_train, y_train, m, x_test, y_test)
+    weights, bias = train(weights, bias, x_train, y_train, m, x_test, y_test, n)
     # Test
-    """
-    accuracy = test(w, b, x_test, y_test)
+    accuracy = test(weights, bias, x_test, y_test)
     # report accuracy
     return accuracy
-    """
 
-# FIX FOR NN
+# Test NN accuracy
 def test(w, b, x_test, y_test):
     correct = 0
     incorrect = 0
+    loss = 0
     # Test it out
     i = 0
+    print("weights: ", w["w1"])
     for row in x_test: # each row is mx1
-        Z = np.dot(row, w)
-        y_hat = sigmoid_v(Z)
-        # Y_ht stuff
-        if (y_test[i] == 1) and (y_hat > 0.5):
-            correct += 1
-        elif(y_test[i] == 0) and (y_hat <= 0.5):
+        row = np.asarray(row)
+        real = y_test[i]
+        # hidden layer 1
+        sig = np.dot(row, w["w1"]) # 1xm mxa = 1xa
+
+        z = sigmoid_v(sig)
+        # hidden layer 2
+        sig2 = np.dot(z, w["w2"]) # 1xa axb = 1xb
+        z2 = sigmoid_v(sig2)
+        # hidden layer 3
+        sig3 = np.dot(z2, w["w3"]) # 1xb bx1 = 1x1
+        y_hat = sigmoid(sig3)
+        # check if correct
+        if abs(real - y_hat) <= 0.5:
             correct += 1
         else:
             incorrect += 1
+        # append loss
+        temp_loss = 0
+        if real == 1:
+            temp_loss = math.log(y_hat)
+        else:
+            temp_loss = math.log(1-y_hat)
+
+        loss += temp_loss
         # iterate i
         i += 1
+
+    print("Loss: ", loss)
 
     # Return final answer
     return correct/(correct + incorrect)
 
-# FIX FOR NN
 # train and optimize those weights!!
-def train(old_w, old_b, x_train, y_train, m, x_test, y_test):
+def train(old_w, old_b, x_train, y_train, m, x_test, y_test, n):
     # Set
     weights = old_w
     bias = old_b # don't mess w for now come back later
@@ -81,6 +100,7 @@ def train(old_w, old_b, x_train, y_train, m, x_test, y_test):
         z1 = sigmoid_v(np.dot(x_train, weights["w1"]) + bias["b1"]) # (nxm)x(mxA) + Ax1 = nxA
         z2 = sigmoid_v(np.dot(z1, weights["w2"]) + bias["b2"]) # (nxA)x(AxB) + Bx1 = nxB
         z3 = sigmoid_v(np.dot(z2, weights["w3"]) + bias["b3"]) # (nxB )x(Bx1) + 1x1 = nx1
+        print("DEBUGGIN: ", np.multiply(z1.T, z2).shape)
         # Create a dict
         Z = {
             "Z1": z1,
@@ -88,69 +108,42 @@ def train(old_w, old_b, x_train, y_train, m, x_test, y_test):
             "Z3": z3
         }
         # Now calculate all gradients
-        # Partial of the log loss function of theta/partial of y hat
-        pLT_pYH = y_train/Z["Z3"] - one_minus(y_train)/one_minus(Z["Z3"]) # nx1
-        # yhat partial / theta 3 partial
-        pYH_pT3 = np.dot(np.multiply(Z["Z3"], one_minus(Z["Z3"])).T, Z["Z2"]).T # (nx1)x(nx1) = (nx1)x(nxB) = Bxn
-        # yhat partial / partial z2
-        PYH_pZ2 = np.dot(np.multiply(Z["Z3"], one_minus(Z["Z3"])), weights["w3"].T) # nxB x 1xb = nxb
-        # z2 partial / partial t2
-        pZ2_pT2 = np.dot(np.multiply(Z["Z2"], one_minus(Z["Z2"])).T, Z["Z1"]).T # nxB.T x nxA = AxB
-        # z2 partial / partial z1
-        pZ2_pZ1 = np.dot(np.multiply(Z["Z2"], one_minus(Z["Z2"])), weights["w2"].T) # nxB AxB.T = nxA
-        # z1 partial / theta 1 partial
-        pZ1_pT1 = np.dot(np.multiply(Z["Z1"], one_minus(Z["Z1"])).T, x_train).T # nxA.T x nxm .T= mxA
+        # grad 3
+        grad_t3 = np.dot(Z["Z2"].T, (y_train-Z["Z3"])) # (bxn) x (nx1) = bx1
+        # grad 2
+        grad_t2 = np.dot(weights["w3"], (y_train-Z["Z3"]).T) # (bx1)x(1xn) = bxn
+        grad_t2 = np.dot(grad_t2, np.dot(Z["Z2"], one_minus(Z["Z2"]).T)) # (bxn)x(nxn) = bxn
+        grad_t2 = np.dot(grad_t2, Z["Z1"]).T # (bxn)x(nxa) = bxa
+        # grad 3
+        grad_t1 = np.dot(weights["w3"], (y_train-Z["Z3"]).T) # (bx1)x(1xn) = bxn
+        grad_t1 = np.dot(grad_t1, np.dot(Z["Z2"], one_minus(Z["Z2"].T))) # (bxn)x(nxn) = bxn
+        temp = np.dot(np.dot(Z["Z1"], one_minus(Z["Z1"]).T), x_train) # nxn nxm = nxm
+        grad_t1 = np.dot(grad_t1.T, weights["w2"].T) # nxb bxa = nxa
+        grad_t1 = np.dot(grad_t1.T, temp).T # axn nxm = axm = mxa
         # Create a grad dictionary
-
         grads = {
-            "grad_t3": np.dot(pYH_pT3, pLT_pYH.T), # (bxn)x(nx1) = bx1
-            "grad_t2": mat_mul(pLT_pYH, PYH_pZ2, pZ2_pT2), # (nx1) (nxb) (AxB) = AxB
-            "grad_t1": mat_mul(pLT_pYH, PYH_pZ2, pZ2_pZ1, pZ1_pT1),
-            "grad_b1": calc_b(grads["grad_t1"], x_train),
-            "grad_b2": calc_b(grads["grad_t2"], Z["Z1"]),
-            "grad_b3": calc_b(grads["grad_t3"], Z["Z2"])
+            "grad_t3": LR*grad_t3,
+            "grad_t2": LR*grad_t2,
+            "grad_t1": LR*grad_t1,
         }
-        """
         # ok now update weights
-        w1 = weights["w1"] + LR*grads["grad_t1"]
-        w2 = weights["w2"] + LR*grads["grad_t2"]
-        w3 = weights["w3"] + LR*grads["grad_t3"]
-        b1 = bias["b1"] + LR*grads["grad_b1"]
-        b2 = bias["b2"] + LR*grads["grad_b2"]
-        b3 = bias["b3"] + LR*grads["grad_b3"]
+        w1 = weights["w1"] + grads["grad_t1"]
+        w2 = weights["w2"] + grads["grad_t2"]
+        w3 = weights["w3"] + grads["grad_t3"]
+        # print(w1)
         # Ok now append dict
         weights = {
             "w1": w1,
             "w2": w2,
             "w3": w3
         }
-        # Biases
-        bias = {
-            "b1": b1,
-            "b2": b2,
-            "b3": b3
-        }
-        # # Set our Z layer
-        # Z = np.dot(x_train, w.T) + b # x and w dot product
-        # # Sigmoid yo
-        # Z = sigmoid_v(Z) # nx1
-        # # backprop to set gradients
-        # temp = y_train - Z # nx1
-        # b_grad = temp
-        # grad = np.dot(x_train.T, temp.T) #nxm x 1xn = 1xm
-        # # Scale by LR
-        # grad = grad*LR
-        # # Append
-        # w = w.reshape((m,1))
-        # w += grad
-        # b += LR*(sum(grad)/len(grad))
-        # w = w.reshape((m,))
-        # print
-        if i % 1000 == 0:
-            print("Test Accuracy: ", test(w, b, x_test, y_test))
-            print("Train Accuracy: ", test(w, b, x_train, y_train))
-            print(i)
-            """
+
+        if i % 10 == 0:
+            print(test(weights, bias, x_train, y_train))
+            print("Grads", grads["grad_t1"])
+            # print(w3)
+            # print(grads["grad_t3"])
+            # print(i)
 
     return weights, bias
 
