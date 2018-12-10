@@ -7,8 +7,8 @@ import math
 LR = 0.0001
 EPOCH_LEN = 100000
 # DIMENTIONS
-A = 16
-B = 4
+A = 256
+B = 128
 
 # master logic
 def master():
@@ -64,7 +64,7 @@ def test(model, x_test, y_test):
         else:
             incorrect += 1
         # loss
-        loss += math.log(z3) if y_test[count] == 1 else math.log(1-z3)
+        loss += math.log(z3) if y_test[count] == 1 else math.log(1-z3+0.00000001)
         # iterate count
         count += 1
 
@@ -88,9 +88,9 @@ def train(model, x_train, y_train, m, x_test, y_test, n):
         ret_model = update_weights(grads, ret_model)
         # check out how we're doing
         if i % 100 == 0:
-            # print("Train Accuracy: ", test(ret_model, x_train, y_train))
+            print("Train Accuracy: ", test(ret_model, x_train, y_train))
             # print("Test Accuracy: ", test(ret_model, x_test, y_test))
-            pass 
+            pass
 
     return ret_model
 
